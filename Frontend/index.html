@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZeeTech World</title>
+
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #0a1a3c, #1c3f78);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 1rem;
+      color: #fff;
+      box-sizing: border-box;
+    }
+
+    .page-title { text-align: center; margin-bottom: 1rem; }
+    .page-title h1 { font-size: 2rem; margin: 0; }
+    .page-title p { font-size: 1.1rem; margin: 0.3rem 0 1.5rem; font-weight: 600; color: #d0d8f0; }
+
+    .contact-form {
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      width: 100%;
+      max-width: 420px;
+      margin: 1rem auto;
+    }
+
+    .contact-form h2 { margin-bottom: 1rem; color: #0a1a3c; text-align: center; }
+
+    .contact-form input, .contact-form textarea {
+      width: 100%;
+      padding: 0.8rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    .contact-form button {
+      background: #0078d7;
+      color: #fff;
+      border: none;
+      padding: 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      width: 100%;
+    }
+
+    .status {
+      margin-top: 1rem;
+      font-size: 0.95rem;
+      text-align: center;
+      min-height: 20px;
+      color: green;
+    }
+
+    /* Tablet adjustments */
+    @media (max-width: 768px) {
+      .page-title h1 { font-size: 1.6rem; }
+      .page-title p { font-size: 1rem; }
+      .contact-form { max-width: 90%; padding: 1rem; }
+      .contact-form input, .contact-form textarea { font-size: 0.95rem; padding: 0.7rem; }
+      .contact-form button { font-size: 0.95rem; padding: 0.8rem; }
+    }
+
+    /* Phone adjustments */
+    @media (max-width: 480px) {
+      .page-title h1 { font-size: 1.4rem; }
+      .contact-form { max-width: 95%; padding: 0.8rem; }
+      .contact-form input, .contact-form textarea { font-size: 0.9rem; padding: 0.6rem; }
+      .contact-form button { font-size: 0.9rem; padding: 0.7rem; }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="page-title">
+  <h1>ZeeTech World</h1>
+  <p>Have a question?</p>
+</div>
+
+<form class="contact-form" id="contactForm">
+  <h2>Contact Us</h2>
+
+  <input type="text" id="name" placeholder="Your Name" required>
+  <input type="email" id="email" placeholder="Your Email" required>
+  <textarea id="message" rows="5" placeholder="Your Message" required></textarea>
+
+  <button type="submit" id="submitBtn">Send Message</button>
+  <div class="status" id="status"></div>
+</form>
+
+<script>
+const form = document.getElementById('contactForm');
+const statusDiv = document.getElementById('status');
+const btn = document.getElementById('submitBtn');
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const data = {
+    name: document.getElementById('name').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    message: document.getElementById('message').value.trim()
+  };
+
+  // UI loading state
+  btn.disabled = true;
+  btn.textContent = "Sending...";
+  statusDiv.style.color = "white";
+  statusDiv.textContent = "Sending message...";
+
+  try {
+    const response = await fetch(
+      "https://mw3czm3303.execute-api.eu-north-1.amazonaws.com/Dev/",
+      {
+        method: "POST",
+        mode: "cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      }
+    );
+
+    let result;
+    try {
+      result = await response.json();
+    } catch {
+      result = { message: "Unexpected server response" };
+    }
+
+    if (response.ok) {
+      statusDiv.style.color = "green";
+      statusDiv.textContent = "✅ Message sent successfully!";
+      setTimeout(() => form.reset(), 1500);
+    } else {
+      statusDiv.style.color = "red";
+      statusDiv.textContent = "❌ " + (result.message || "Server error");
+    }
+
+  } catch (error) {
+    console.error(error);
+    statusDiv.style.color = "orange";
+    statusDiv.textContent = "⚠️ Cannot reach server. Check CORS or deployment.";
+  }
+
+  btn.disabled = false;
+  btn.textContent = "Send Message";
+});
+</script>
+
+</body>
+</html>

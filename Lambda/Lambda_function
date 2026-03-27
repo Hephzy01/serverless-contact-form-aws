@@ -1,0 +1,91 @@
+import json
+import boto3
+import uuid
+from datetime import datetime
+
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('contactdata2')
+
+# ✅ ADDED — SNS client
+sns = boto3.client('sns')
+TOPIC_ARN = "arn:aws:sns:eu-north-1:793432095784:zeeform-sns"
+
+
+def lambda_handler(event, context):
+    try:
+        # ✅ ADDED — CloudWatch log
+        print("Incoming event:", json.dumps(event))
+
+        # Handle API Gateway body safely
+        if event.get("body"):
+            if isinstance(event["body"], str):
+                body = json.loads(event["body"])
+            else:
+                body = event["body"]
+        else:
+            body = event
+
+        # ✅ ADDED — log parsed body
+        print("Parsed body:", body)
+
+        name = body.get("name")
+        email = body.get("email")
+        message = body.get("message")
+
+        if not name or not email or not message:
+            print("Missing fields detected")  # ✅ ADDED
+            return response(400, {"message": "Missing fields"})
+
+        userid = str(uuid.uuid4())
+
+        table.put_item(
+            Item={
+                "userid": userid,
+                "name": name,
+                "email": email,
+                "message": message,
+                "createdAt": datetime.utcnow().isoformat()
+            }
+        )
+
+        # ✅ ADDED — log success
+        print("Stored in DynamoDB:", userid)
+
+        # ✅ ADDED — SEND SNS EMAIL
+        sns.publish(
+            TopicArn=TOPIC_ARN,
+            Subject="New Contact Form Submission",
+            Message=f"""
+New contact form submission received:
+
+Name: {name}
+Email: {email}
+Message: {message}
+UserID: {userid}
+Time: {datetime.utcnow().isoformat()}
+"""
+        )
+
+        # ✅ ADDED — log SNS sent
+        print("SNS notification sent")
+
+        return response(200, {
+            "message": "Stored successfully",
+            "userid": userid
+        })
+
+    except Exception as e:
+        print("ERROR:", str(e))
+        return response(500, {"error": str(e)})
+
+
+def response(code, body):
+    return {
+        "statusCode": code,
+        "headers": {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+        },
+        "body": json.dumps(body)
+    }
