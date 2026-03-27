@@ -45,6 +45,7 @@ serverless-contact-form/
 ├── frontend/
 ├── lambda/
 ├── screenshots/
+├── Architecture-daigram/
 ├── README.md
 └── .gitignore
 ```
@@ -75,17 +76,44 @@ serverless-contact-form/
 * Create function
 * Add code to save form data
 
-### 5. API Gateway
+### 5. Create SNS Topic
+ * Create a topic
+ * Add an email subscription
+ * Confirm the subscription from your email
+
+### 6. API Gateway
 
 * Create HTTP API
 * Add POST route → Lambda
 
-### 6. Connect Frontend
+### 7. Connect Frontend
 
 Update API endpoint in `script.js`
 
 ---
 
+### ⚠️  Common Issues
+
+### CORS Errors
+ * Enable CORS in API Gateway
+ * Add headers in Lambda response
+   
+### No Email Received
+ * Confirm SNS subscription
+   
+### Lambda Not Triggering
+ * Check API Gateway integration
+ * Verify IAM permissions
+
+
+---
+
+### 🔐 Security Best Practices
+ * Follow least privilege for IAM roles
+ * Restrict DynamoDB access to specific table
+ * Avoid hardcoding sensitive values
+
+---
 ## 📸 Screenshots
 
 Add your images inside `/screenshots` and they will display here.
