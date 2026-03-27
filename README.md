@@ -14,6 +14,7 @@ When a message is submitted:
 2. AWS Lambda processes the request
 3. Data is stored in DynamoDB
 4. Logs are stored in CloudWatch
+5. SES send email notification
 
 ---
 
