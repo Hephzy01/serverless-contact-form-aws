@@ -19,7 +19,8 @@ When a message is submitted:
 
 ## 🏗️ Architecture
 
-User → CloudFront → S3 → API Gateway → Lambda → DynamoDB
+
+<img width="771" height="482" alt="contactform" src="https://github.com/user-attachments/assets/409fdeba-bf62-49c9-b80e-87a1b3dc0aca" />
 
 ---
 
