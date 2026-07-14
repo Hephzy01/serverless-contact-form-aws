@@ -126,7 +126,7 @@ Add your images inside `/screenshots` and they will display here.
 Clone the repo:
 
 ```bash
-git clone https://github.com/YOUR-USERNAME//serverless-contact-form-aws.git
+git clone https://github.com/Hephzy01//serverless-contact-form-aws.git
 ```
 
 Follow setup steps above.
